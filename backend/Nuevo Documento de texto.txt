@@ -1,0 +1,34 @@
+# 💼 Portafolio de Desarrollo de Software & Datos
+
+Repositorio central con proyectos prácticos organizados por áreas de especialización técnica: Frontend interactivo, lógica relacional en bases de datos, pipelines de procesamiento de datos y aseguramiento de calidad de software (QA).
+
+---
+
+## 📂 Proyectos por Área
+
+### 🎨 Frontend & Web Development
+* **[Antojitos — Landing & Catálogo](./frontend/Antojitos):** Aplicación web comercial desarrollada en **React** y **Vite**, con diseño modular en **Tailwind CSS**, componentes 3D (`preserve-3d`), vistas dinámicas y filtrado de productos.
+* **[Rick & Morty Explorer](./frontend/rick-and-morty-explorer):** Dashboard interactivo desarrollado con **React** y **Vite** para la integración con API REST pública. Incluye paginación dinámica, búsqueda en tiempo real, control de excepciones y renderizado condicional de estados.
+
+### 🗄️ Bases de Datos & Backend Logic
+* **[01-Oracle-PLSQL-Ecommerce](./databases/01-oracle-plsql-ecommerce):** Esquema relacional para comercio electrónico en **Oracle Database**. Implementación de procedimientos almacenados, paquetes PL/SQL, control de transacciones ACID, control de inventario y triggers de auditoría.
+
+### ⚙️ Procesamiento de Datos & ETL (En Desarrollo)
+* **[01-ETL-Sales-Pipeline](./backend/01-etl-sales-pipeline):** Script de extracción, limpieza, transformación y carga (ETL) automatizada utilizando **Python** y **Pandas**, con persistencia e inserción masiva en base de datos relacional.
+
+---
+
+## 🛠️ Stack Tecnológico Global
+
+| Área | Tecnologías y Herramientas |
+| :--- | :--- |
+| **Frontend** | React, Vite, JavaScript (ES6+), Tailwind CSS, Bootstrap, HTML5/CSS3 |
+| **Bases de Datos** | Oracle Database (PL/SQL), MySQL, PostgreSQL, Modelado Relacional |
+| **Backend & Datos** | Python, Pandas, APIs REST (JSON), Postman |
+| **Control de Versiones** | Git, GitHub |
+
+---
+
+## 📬 Contacto
+* **GitHub:** [@JoseDiaz24-p](https://github.com/JoseDiaz24-p)
+* **Correo:** jose.diaz.orellana@hotmail.com

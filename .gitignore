@@ -38,7 +38,6 @@ dist-ssr/
 *.db
 *.sqlite3
 *.csv
-backend/01-etl-sales-pipeline/data/*.csv
 
 # ==========================================
 # 5. Editores e IDEs

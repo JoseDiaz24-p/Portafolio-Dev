@@ -8,7 +8,7 @@ DATA_RAW = os.path.join(BASE_DIR, "data", "credit_card.csv")
 DB_OUTPUT = os.path.join(BASE_DIR, "fraud_warehouse.db")
 LOG_FILE = os.path.join(BASE_DIR, "registro_fraudes.log")
 
-# Configuración correcta con handlers múltiples
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s : %(message)s",

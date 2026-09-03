@@ -1,30 +1,29 @@
-# 🚀 Portafolio de Desarrollo de Software & Datos — José Díaz Orellana
+# 🚀 Data Engineering & Backend Portfolio
 
-Bienvenido a mi portafolio técnico. Soy **Analista Programador**, enfocado en la construcción de soluciones backend, modelado avanzado de bases de datos relacionales, automatización de pipelines de datos y aseguramiento de calidad de software (QA).
-
----
-
-## 🛠️ Stack Tecnológico Principal
-
-* **Lenguajes:** Python (Pandas, Pytest, Django), JavaScript (React, ES6+), SQL ANSI, PL/SQL.
-* **Bases de Datos:** Oracle Database (PL/SQL), MySQL, SQLite.
-* **Control de Versiones & Herramientas:** Git, GitHub, VS Code, Postman, Linux.
+Repositorio enfocado en el diseño, desarrollo y orquestación de flujos de datos (ETL/ELT), modelado relacional y arquitecturas de backend confiables.
 
 ---
 
-## 📂 Estructura y Proyectos del Repositorio
+## 📂 Estructura del Repositorio
 
-| Área | Proyecto | Tecnologías Clave | Enlace Directo |
-| :--- | :--- | :--- | :--- |
-| **Bases de Datos & SQL** | Motor Transaccional & Auditoría E-Commerce | Oracle PL/SQL, Procedimientos, Triggers, ACID | [Ver Proyecto](./databases/01-oracle-plsql-ecommerce) |
-| **Ingeniería de Datos & Python** | Pipeline ETL Financiero & Almacén Analítico | Python, Pandas, Ingesta Masiva, SQLite Views | [Ver Proyecto](./backend/01-etl-sales-pipeline) |
-| **QA & Automatización** | Suite de Integridad de Datos & Pruebas Unitarias | Pytest, Matriz de Pruebas, Validación de Esquemas | [Ver Proyecto](./qa/01-api-automation-tests) |
-| **Desarrollo Frontend** | Interfaces Web & Consumo de APIs REST | React, Vite, Tailwind CSS, JavaScript | [Ver Proyecto](./frontend/rick-and-morty-explorer) |
+```text
+Portafolio-Dev/
+│
+├── pipelines/                     # Proyectos de Data Engineering & ETL
+│   ├── 01-pipeline-fraude/        # Detección de fraude financiero con Docker y Data Quality
+│   └── 02-pipeline-bnpl/          # Procesamiento y conciliación de créditos BNPL
+│
+├── databases/                     # Scripts de arquitectura y administración de BD
+│   └── oracle-sql/                # Stored Procedures, Triggers y auditoría PL/SQL
+│
+├── backend/                       # Servicios y APIs de soporte
+│
+└── frontend/                      # Proyectos de soporte visual e interfaces
+```
 
 ---
 
-## 📬 Contacto Profesional
-
-* **Correo:** jose.diaz.orellana@hotmail.com
-* **GitHub:** [github.com/JoseDiaz24-p](https://github.com/JoseDiaz24-p)
-* **Ubicación:** Región de O'Higgins, Chile
+## 🛠️ Stack Tecnológico
+* **Data Engineering & Scripting:** Python (Pandas, Polars), SQL (Oracle PL/SQL, SQLite, MySQL).
+* **Calidad y Contenerización:** Docker, Docker Compose, Logging estructurado.
+* **Modelado de Datos:** Esquemas relacionales, tablas de hechos y dimensiones, normalización.

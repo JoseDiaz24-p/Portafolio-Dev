@@ -1,48 +1,45 @@
-# 💳 Financial Fraud ETL Pipeline & Analytics Warehouse
+# 💳 Financial Fraud Detection Pipeline (ETL)
 
-Pipeline automatizado de Extracción, Transformación y Carga (**ETL**) desarrollado en **Python** para la ingesta, limpieza, enriquecimiento y análisis de riesgo en transacciones bancarias, con persistencia y modelado relacional en **SQLite**.
+Pipeline de ingestión, validación de calidad y detección de anomalías transaccionales para prevención de fraude con tarjetas de crédito.
 
----
+## 📐 Arquitectura del Flujo de Datos
 
-## 📌 Arquitectura y Flujo de Datos
+```mermaid
+flowchart LR
+    A[Archivos Transaccionales CSV] --> B[Extracción & Parsing]
+    B --> C[Data Quality Gate:\nValores nulos, tipos y montos]
+    C --> D[Transformación:\nDetección de patrones de riesgo]
+    D --> E[(SQLite / Data Warehouse\nfact_transacciones_fraude)]
+```
 
-1. **Extracción (Extract):** Ingesta masiva de transacciones financieras desde fuentes tabulares (`CSV`), validando integridad de rutas y estructura de datos.
-2. **Transformación (Transform):**
-   * Eliminación y control de registros duplicados por `transaction_id`.
-   * Depuración de valores nulos o incompletos (`dropna`).
-   * **Feature Engineering:** Segmentación de riesgo por rangos de monto (`Bajo`, `Medio`, `Alto`, `Crítico`).
-   * Normalización y etiquetado categórico del estado de fraude.
-3. **Carga & Analítica (Load):**
-   * Persistencia estructurada en la tabla relacional `transacciones_bancarias`.
-   * Creación de **Vistas SQL (`VIEW`)** para auditoría y KPIs de negocio (`v_resumen_categoria`, `v_resumen_riesgo`).
+## 🛠️ Tecnologías Utilizadas
+* **Lenguaje:** Python 3.11
+* **Manipulación de Datos:** Pandas
+* **Almacenamiento Analítico:** SQLite (Modelo dimensional tabular)
+* **Infraestructura:** Docker & Docker Compose
+* **Monitoreo & Logs:** Módulo `logging` nativo estructurado
 
----
+## 🔍 Reglas de Calidad y Detección
+1. **Filtros de Integridad:** Descarte automático de identificadores duplicados y valores de montos `<= 0`.
+2. **Flags de Riesgo:** Identificación de patrones transaccionales anómalos (alto valor transaccional en ventanas nocturnas no habituales).
+3. **Auditabilidad:** Cada registro cargado incluye un campo `ingestion_timestamp` en UTC para trazabilidad de linaje de datos.
 
-## 📊 Métricas y Reporte SQL Generado
+## 🚀 Cómo Ejecutar el Proyecto
 
-El pipeline calcula automáticamente el volumen operacional y el impacto financiero por categoría:
+### Opción 1: Con Docker (Recomendado)
+```bash
+docker compose up --build
+```
 
-| Comercio | Transacciones | Fraudes Detectados | Total Defraudado |
-| :--- | :--- | :--- | :--- |
-| **Clothing** | 2,050 | 24 | $3,884.94 |
-| **Electronics** | 1,923 | 24 | $5,855.07 |
-| **Food** | 2,093 | 35 | $7,534.58 |
-| **Grocery** | 1,944 | 39 | $8,684.52 |
-| **Travel** | 1,990 | 29 | $6,684.52 |
+### Opción 2: Entorno Virtual Local
+```bash
+# 1. Crear y activar entorno virtual
+python -m venv venv
+source venv/Scripts/activate  # En Windows
 
----
+# 2. Instalar dependencias
+pip install -r requirements.txt
 
-## 🛠️ Stack Tecnológico
-
-* **Lenguaje:** Python 3.10+
-* **Procesamiento de Datos:** Pandas
-* **Motor Relacional:** SQLite / SQL ANSI (DDL, DML, Agrupaciones y Vistas)
-* **Dataset:** [Credit Card Fraud Detection Dataset](https://www.kaggle.com/datasets/miadul/credit-card-fraud-detection-dataset)
-
----
-
-## 🚀 Ejecución Local
-
-1. Instalar dependencias:
-   ```bash
-   pip install pandas
+# 3. Ejecutar pipeline
+python etl_pipeline.py
+```

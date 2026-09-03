@@ -1,0 +1,36 @@
+2026-09-03 11:12:52: [INFO] etl_pipeline : [1/3] Se Extraen Los datos desde: C:\Users\josed\OneDrive\Desktop\Portafolio-Dev\pipelines\01-pipeline-fraude_tarjetas_de_credito\data\credit_card.csv
+2026-09-03 11:12:52: [INFO] etl_pipeline : -> Total transacciones extraÌdas: 10,000
+2026-09-03 11:12:52: [INFO] etl_pipeline : 
+[2/3] Transformando y enriqueciendo transacciones...
+2026-09-03 11:12:52: [INFO] etl_pipeline : -> Registros duplicados eliminados: 0
+2026-09-03 11:12:52: [INFO] etl_pipeline : -> Total transacciones procesadas: 10,000
+2026-09-03 11:12:52: [INFO] etl_pipeline : 
+[3/3] Cargando datos en almacÈn relacional...
+2026-09-03 11:12:52: [INFO] etl_pipeline : -> Tabla 'transacciones_bancarias' y vistas analÌticas creadas con Èxito.
+2026-09-03 11:12:52: [INFO] etl_pipeline : 
+--- REPORTE DE FRAUDE POR CATEGORÕA DE COMERCIO (GENERADO POR SQL) ---
+2026-09-03 11:12:52: [INFO] etl_pipeline : Comercio: Clothing        | Transacciones: 2050  | Fraudes: 24  | Defraudado: $3,884.94
+2026-09-03 11:12:52: [INFO] etl_pipeline : Comercio: Electronics     | Transacciones: 1923  | Fraudes: 24  | Defraudado: $5,855.07
+2026-09-03 11:12:52: [INFO] etl_pipeline : Comercio: Food            | Transacciones: 2093  | Fraudes: 35  | Defraudado: $7,534.58
+2026-09-03 11:12:52: [INFO] etl_pipeline : Comercio: Grocery         | Transacciones: 1944  | Fraudes: 39  | Defraudado: $8,684.52
+2026-09-03 11:12:52: [INFO] etl_pipeline : Comercio: Travel          | Transacciones: 1990  | Fraudes: 29  | Defraudado: $6,684.52
+2026-09-03 11:12:52: [INFO] etl_pipeline : 
+\u2705 Pipeline Financiero ejecutado exitosamente.
+2026-09-03 16:11:49 [INFO] etl_pipeline : [1/3] Se Extraen Los datos desde: /app/data/credit_card.csv
+2026-09-03 16:11:49 [INFO] etl_pipeline : -> Total transacciones extra√≠das: 10,000
+2026-09-03 16:11:49 [INFO] etl_pipeline : 
+[2/3] Transformando y enriqueciendo transacciones...
+2026-09-03 16:11:49 [INFO] etl_pipeline : -> Registros duplicados eliminados: 0
+2026-09-03 16:11:49 [INFO] etl_pipeline : -> Total transacciones procesadas: 10,000
+2026-09-03 16:11:49 [INFO] etl_pipeline : 
+[3/3] Cargando datos en almac√©n relacional...
+2026-09-03 16:11:50 [INFO] etl_pipeline : -> Tabla 'transacciones_bancarias' y vistas anal√≠ticas creadas con √©xito.
+2026-09-03 16:11:50 [INFO] etl_pipeline : 
+--- REPORTE DE FRAUDE POR CATEGOR√çA DE COMERCIO (GENERADO POR SQL) ---
+2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Clothing        | Transacciones: 2050  | Fraudes: 24  | Defraudado: $3,884.94
+2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Electronics     | Transacciones: 1923  | Fraudes: 24  | Defraudado: $5,855.07
+2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Food            | Transacciones: 2093  | Fraudes: 35  | Defraudado: $7,534.58
+2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Grocery         | Transacciones: 1944  | Fraudes: 39  | Defraudado: $8,684.52
+2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Travel          | Transacciones: 1990  | Fraudes: 29  | Defraudado: $6,684.52
+2026-09-03 16:11:50 [INFO] etl_pipeline : 
+‚úÖ Pipeline Financiero ejecutado exitosamente.

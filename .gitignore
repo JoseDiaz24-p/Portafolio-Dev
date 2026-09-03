@@ -14,7 +14,14 @@ venv.bak/
 .venv/
 
 # ==========================================
-# 2. Testing & QA (Pytest)
+# 2. Logs y Auditoría de Pipelines
+# ==========================================
+*.log
+registro_fraudes.log
+registro_bnpl.log
+
+# ==========================================
+# 3. Testing & QA (Pytest)
 # ==========================================
 .pytest_cache/
 .coverage
@@ -23,7 +30,7 @@ htmlcov/
 .nox/
 
 # ==========================================
-# 3. Node & Frontend (React / Vite)
+# 4. Node & Frontend (React / Vite)
 # ==========================================
 node_modules/
 dist/
@@ -33,14 +40,18 @@ dist-ssr/
 .eslintcache
 
 # ==========================================
-# 4. Bases de Datos & Archivos Pesados de Datos
+# 5. Bases de Datos Locales & Almacenes Analíticos
 # ==========================================
 *.db
+*.sqlite
 *.sqlite3
-*.csv
+*.db-journal
+
+# Descomentar si no deseas versionar los datasets crudos pesados:
+# *.csv
 
 # ==========================================
-# 5. Editores e IDEs
+# 6. Editores e IDEs (VS Code, Spyder, JetBrains)
 # ==========================================
 .vscode/
 .idea/
@@ -50,7 +61,7 @@ dist-ssr/
 .spyproject
 
 # ==========================================
-# 6. Sistema Operativo
+# 7. Sistema Operativo
 # ==========================================
 Thumbs.db
 Desktop.ini

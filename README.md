@@ -1,6 +1,15 @@
 # 🚀 Data Engineering & Backend Portfolio
 
-Repositorio enfocado en el diseño, desarrollo y orquestación de flujos de datos (ETL/ELT), modelado relacional y arquitecturas de backend confiables.
+Repositorio profesional enfocado en el diseño, desarrollo y orquestación de flujos de datos (ETL/ELT), modelado dimensional/relacional, calidad de datos y arquitecturas reproducibles mediante contenedores Docker.
+
+---
+
+## 🛠️ Stack Tecnológico
+
+* **Lenguajes & Scripting:** Python 3.11, SQL (Oracle PL/SQL, SQLite, MySQL).
+* **Data Processing:** Pandas, NumPy.
+* **Contenedores & DevOps:** Docker, Docker Compose, Git.
+* **Prácticas de Software:** Logging estructurado dual (consola + persistente UTF-8), control de idempotencia, Data Quality Gates y manejo defensivo de excepciones.
 
 ---
 
@@ -9,21 +18,13 @@ Repositorio enfocado en el diseño, desarrollo y orquestación de flujos de dato
 ```text
 Portafolio-Dev/
 │
-├── pipelines/                     # Proyectos de Data Engineering & ETL
-│   ├── 01-pipeline-fraude/        # Detección de fraude financiero con Docker y Data Quality
-│   └── 02-pipeline-bnpl/          # Procesamiento y conciliación de créditos BNPL
+├── pipelines/                                 # Pipelines ETL y Analítica de Datos
+│   ├── 01-pipeline-fraude_tarjetas_de_credito/ # Detección de fraude financiero con Docker y vistas SQL
+│   └── 02-pipeline-bnpl/                      # Ingesta, discretización etaria y scoring de mora BNPL
 │
-├── databases/                     # Scripts de arquitectura y administración de BD
-│   └── oracle-sql/                # Stored Procedures, Triggers y auditoría PL/SQL
+├── databases/                                 # Arquitectura, persistencia y administración de BD
+│   └── oracle-sql/                            # Stored Procedures, Triggers y auditoría PL/SQL
 │
-├── backend/                       # Servicios y APIs de soporte
+├── backend/                                   # Servicios, endpoints y lógica de negocio
 │
-└── frontend/                      # Proyectos de soporte visual e interfaces
-```
-
----
-
-## 🛠️ Stack Tecnológico
-* **Data Engineering & Scripting:** Python (Pandas, Polars), SQL (Oracle PL/SQL, SQLite, MySQL).
-* **Calidad y Contenerización:** Docker, Docker Compose, Logging estructurado.
-* **Modelado de Datos:** Esquemas relacionales, tablas de hechos y dimensiones, normalización.
+└── frontend/                                  # Interfaces visuales y dashboards de soporte

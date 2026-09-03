@@ -1,69 +1,128 @@
-# E-Commerce Data Engineering & Business Logic with Oracle PL/SQL
+# 🛒 E-Commerce Data Engineering & Business Logic with Oracle PL/SQL
 
-Este proyecto implementa una arquitectura relacional completa para la gestión, análisis y auditoría de transacciones de un comercio electrónico a gran escala utilizando **Oracle Database**, **SQL Avanzado** y **PL/SQL**.
+Arquitectura relacional completa para la gestión, auditoría y análisis de transacciones de un comercio electrónico a escala empresarial utilizando **Oracle Database (19c/21c)**, **SQL Avanzado** y **PL/SQL**.
 
-El desarrollo se construyó a partir del dataset transaccional público de **Olist E-Commerce**, aplicando normalización de datos, integridad referencial, índices de optimización, procedimientos almacenados con lógica de negocio, triggers reactivos, paquetes modulares y procesos ETL.
-
----
-
-## 🛠️ Tecnologías y Herramientas
-* **Motor de Base de Datos:** Oracle Database (19c/21c Express Edition)
-* **Lenguajes:** SQL / Oracle PL/SQL
-* **Herramienta de Gestión:** Oracle SQL Developer
-* **Estructura de Datos:** Relacional (5 tablas interconectadas con claves primarias y foráneas)
+El proyecto toma como base el dataset transaccional de **Olist E-Commerce** (más de 100,000 registros), implementando normalización en tercera forma normal (3FN), integridad referencial estricta, índices de optimización, procedimientos almacenados con control de transacciones, triggers reactivos y procesos ETL para poblamiento de Data Marts.
 
 ---
 
-## 📊 Modelo de Datos Relacional
+## 📐 Diagrama Entidad-Relación (ERD)
 
-El esquema está compuesto por 5 entidades principales normalizadas:
-1. **`clientes`**: Información demográfica y geográfica de compradores.
-2. **`productos`**: Catálogo de productos, categorías y dimensiones físicas.
-3. **`ordenes`**: Encabezado del pedido con marcas de tiempo (compra, despacho, entrega).
-4. **`items_orden`**: Detalle transaccional de productos, precios y costos de flete por pedido.
-5. **`pagos_orden`**: Registro de transacciones financieras, métodos de pago y cuotas.
+```mermaid
+erDiagram
+    CLIENTES ||--o{ ORDENES : "realiza (1:N)"
+    ORDENES ||--|{ ITEMS_ORDEN : "contiene (1:N)"
+    ORDENES ||--|{ PAGOS_ORDEN : "liquida (1:N)"
+    PRODUCTOS ||--o{ ITEMS_ORDEN : "incluido_en (1:N)"
+    ORDENES ||--o{ AUDITORIA_ORDENES : "genera_historial (1:N)"
+
+    CLIENTES {
+        VARCHAR2 customer_id PK
+        VARCHAR2 customer_unique_id
+        VARCHAR2 customer_zip_code_prefix
+        VARCHAR2 customer_city
+        VARCHAR2 customer_state
+    }
+
+    PRODUCTOS {
+        VARCHAR2 product_id PK
+        VARCHAR2 product_category_name
+        NUMBER product_weight_g
+        NUMBER product_length_cm
+        NUMBER product_height_cm
+        NUMBER product_width_cm
+    }
+
+    ORDENES {
+        VARCHAR2 order_id PK
+        VARCHAR2 customer_id FK
+        VARCHAR2 order_status
+        TIMESTAMP order_purchase_timestamp
+        TIMESTAMP order_approved_at
+        TIMESTAMP order_delivered_customer_date
+        TIMESTAMP order_estimated_delivery_date
+    }
+
+    ITEMS_ORDEN {
+        VARCHAR2 order_id PK,FK
+        NUMBER order_item_id PK
+        VARCHAR2 product_id FK
+        VARCHAR2 seller_id
+        NUMBER price
+        NUMBER freight_value
+    }
+
+    PAGOS_ORDEN {
+        VARCHAR2 order_id PK,FK
+        NUMBER payment_sequential PK
+        VARCHAR2 payment_type
+        NUMBER payment_installments
+        NUMBER payment_value
+    }
+
+    AUDITORIA_ORDENES {
+        NUMBER audit_id PK
+        VARCHAR2 order_id FK
+        VARCHAR2 estado_anterior
+        VARCHAR2 estado_nuevo
+        VARCHAR2 usuario_modificacion
+        TIMESTAMP fecha_modificacion
+    }
+```
 
 ---
 
-## 🚀 Contenido del Repositorio
+## 🛠️ Stack Tecnológico
 
-El código SQL se encuentra organizado en tres niveles de complejidad:
-
-### 1. Consultas Analíticas, Agregaciones y Vistas (Nivel 1)
-* Métricas financieras por cliente (gasto acumulado, órdenes únicas).
-* Rentabilidad y costos de flete por categoría de producto (`FETCH FIRST N ROWS ONLY`).
-* Detección de anomalías operacionales mediante consultas `Anti-Join` (`LEFT JOIN ... WHERE IS NULL`).
-* Preferencia de métodos de pago por región geográfica.
-* Vista consolidada de pedidos: `v_detalle_pedidos_completo`.
-
-### 2. Lógica Transaccional y Procedimientos Almacenados (Nivel 2)
-* **`sp_cancelar_orden`**: Validación de estados de despacho, reversión controlada y manejo de excepciones (`NO_DATA_FOUND`).
-* **`sp_registrar_pago`**: Cálculo dinámico del correlativo de pago e inserción parametrizada con control de montos.
-* **`sp_kpis_cliente`**: Procedimiento con parámetros `OUT` para integración directa con capas de backend o APIs.
-* **`sp_auditar_ordenes_caras`**: Procesamiento por lotes utilizando un **cursor explícito** (`CURSOR`, `LOOP`, `FETCH`) para auditar órdenes de alto valor.
-* **`sp_actualizar_categoria_nula`**: Manejo de atributos de cursor implícito (`SQL%ROWCOUNT`) para trazabilidad de modificaciones masivas.
-
-### 3. Triggers, Modularidad y Pipelines ETL (Nivel 3)
-* **`trg_auditar_estado_orden`**: Trigger `AFTER UPDATE` para registrar el historial de transiciones de estado, usuario y fecha en la tabla `auditoria_ordenes`.
-* **`trg_validar_fecha_entrega`**: Trigger `BEFORE UPDATE` para asegurar la coherencia temporal entre la compra y la entrega (`RAISE_APPLICATION_ERROR`).
-* **`pkg_gestion_pedidos`**: Paquete PL/SQL (especificación y body) con funciones de cálculo total y procedimientos de cambio de estado.
-* **`pkg_reportes_financieros`**: Paquete modular con cursores parametrizados para reportes ejecutivos.
-* **`sp_cargar_resumen_mensual`**: Procedimiento ETL con SQL dinámico (`EXECUTE IMMEDIATE`) para alimentar un Data Mart mensual (`dm_resumen_mensual`).
+* **Motor de Base de Datos:** Oracle Database (19c / 21c XE).
+* **Lenguajes:** SQL ANSI / Oracle PL/SQL.
+* **Herramientas:** Oracle SQL Developer, SQLcl.
+* **Modelo Relacional:** 5 tablas principales interconectadas + tablas de auditoría y Data Mart analítico.
 
 ---
 
-## ⚡ Rendimiento e Índices
-Para garantizar tiempos de respuesta óptimos frente a más de 100.000 registros, se implementaron índices B-Tree sobre las claves foráneas y columnas de filtro recurrente:
-* `idx_ordenes_cliente`
-* `idx_items_producto`
-* `idx_items_vendedor`
-* `idx_pagos_orden`
-* `idx_ordenes_estado`
+## 🚀 Módulos de Lógica de Negocio en PL/SQL
+
+### 1. Consultas Analíticas y Vistas de Alto Rendimiento
+* **Métricas de Consumo:** Agregaciones financieras por cliente (LTV, frecuencia de compra y ticket promedio).
+* **Eficiencia Logística:** Rentabilidad neta y costos de flete por categoría usando cláusulas modernas de paginación (`FETCH FIRST N ROWS ONLY`).
+* **Data Quality & Integridad:** Consultas `Anti-Join` (`LEFT JOIN ... WHERE IS NULL`) para detectar órdenes sin ítems o pagos huérfanos.
+* **Capa Semántica:** Vista materializable `v_detalle_pedidos_completo` para consumo directo de tableros de BI.
+
+### 2. Procedimientos Almacenados y Control Transaccional
+* **`sp_cancelar_orden`:** Validación del ciclo de vida del pedido; bloquea cancelaciones de órdenes ya despachadas y gestiona excepciones (`NO_DATA_FOUND`).
+* **`sp_registrar_pago`:** Cálculo dinámico del correlativo de pago secuencial e inserción parametrizada con control de importes.
+* **`sp_kpis_cliente`:** Procedimiento con parámetros `OUT` desacoplado para ser consumido por endpoints de backend o microservicios.
+* **`sp_auditar_ordenes_caras`:** Procesamiento por lotes utilizando un **cursor explícito** (`CURSOR`, `OPEN`, `FETCH`, `CLOSE`) para identificar compras de alto riesgo financiero.
+* **`sp_actualizar_categoria_nula`:** Manejo de variables de entorno de cursor implícito (`SQL%ROWCOUNT`) para registrar el volumen exacto de registros modificados.
+
+### 3. Triggers Reactivos y Arquitectura Modular (Packages)
+* **`trg_auditar_estado_orden`:** Trigger `AFTER UPDATE` sobre `ordenes` que almacena automáticamente el estado previo, estado nuevo, usuario del sistema y estampa de tiempo en `auditoria_ordenes`.
+* **`trg_validar_fecha_entrega`:** Trigger `BEFORE UPDATE` que impide fechas de entrega anteriores a la fecha de compra mediante excepciones de aplicación (`RAISE_APPLICATION_ERROR`).
+* **`pkg_gestion_pedidos`:** Paquete modular (especificación y cuerpo) que encapsula funciones de costeo total y procedimientos de transición de estados.
+* **`pkg_reportes_financieros`:** Paquete con cursores parametrizados para la emisión de reportes ejecutivos.
+* **`sp_cargar_resumen_mensual`:** Procedimiento ETL interno con SQL dinámico (`EXECUTE IMMEDIATE`) para poblar la tabla dimensional agregada `dm_resumen_mensual`.
 
 ---
 
-## 💻 Instrucciones de Ejecución
-1. Abrir **Oracle SQL Developer** y conectarse a la instancia de base de datos.
-2. Ejecutar el script DDL de creación de tablas e índices.
-3. Importar los archivos CSV correspondientes respetando el orden de dependencias referenciales (`clientes` -> `productos` -> `ordenes` -> `items_orden` -> `pagos_orden`).
-4. Compilar los procedimientos, funciones, triggers y paquetes PL/SQL provistos en el script principal.
+## ⚡ Estrategia de Rendimiento e Indexación
+
+Para garantizar tiempos de respuesta en subsegundos sobre más de 100,000 tuplas, se implementaron índices B-Tree sobre las claves foráneas y columnas de filtrado recurrente:
+
+```sql
+CREATE INDEX idx_ordenes_cliente  ON ordenes(customer_id);
+CREATE INDEX idx_items_producto   ON items_orden(product_id);
+CREATE INDEX idx_items_vendedor   ON items_orden(seller_id);
+CREATE INDEX idx_pagos_orden      ON pagos_orden(order_id);
+CREATE INDEX idx_ordenes_estado   ON ordenes(order_status);
+```
+
+---
+
+## 💻 Instrucciones de Instalación y Despliegue
+
+1. **Conexión:** Abrir **Oracle SQL Developer** o conectarse mediante **SQLcl** a una instancia local o remota de Oracle Database.
+2. **Definición de Esquema:** Ejecutar los scripts DDL de creación de tablas, llaves primarias/foráneas e índices B-Tree.
+3. **Ingesta de Datos:** Cargar los archivos CSV asegurando el siguiente orden de dependencias referenciales:
+   $$\text{clientes} \longrightarrow \text{productos} \longrightarrow \text{ordenes} \longrightarrow \text{items\_orden} \longrightarrow \text{pagos\_orden}$$
+4. **Compilación PL/SQL:** Compilar en la base de datos los scripts con procedimientos, funciones, triggers y paquetes (`PACKAGE SPEC` y `PACKAGE BODY`).

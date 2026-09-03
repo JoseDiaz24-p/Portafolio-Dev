@@ -1,0 +1,33 @@
+name: CI Pipelines Validation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build and Run Data Pipelines
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descarga el código del repositorio en el runner de GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configura Docker Buildx para construir contenedores
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Construye y ejecuta el Pipeline 01 (Fraude)
+      - name: Run Credit Card Fraud Pipeline
+        run: |
+          cd pipelines/01-pipeline-fraude_tarjetas_de_credito
+          docker compose up --build --abort-on-container-exit --exit-code-from fraud-pipeline
+
+      # 4. Construye y ejecuta el Pipeline 02 (BNPL)
+      - name: Run BNPL Credit Risk Pipeline
+        run: |
+          cd pipelines/02-pipeline-bnpl
+          docker compose up --build --abort-on-container-exit --exit-code-from bnpl-pipeline

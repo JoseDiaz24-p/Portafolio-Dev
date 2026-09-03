@@ -1,4 +1,5 @@
 # 🚀 Data Engineering & Backend Portfolio
+[![CI Pipelines Validation](https://github.com/JoseDiaz24-p/Portafolio-Dev/actions/workflows/ci.yml/badge.svg)](https://github.com/JoseDiaz24-p/Portafolio-Dev/actions/workflows/ci.yml)
 
 Repositorio profesional enfocado en el diseño, desarrollo y orquestación de flujos de datos (ETL/ELT), modelado dimensional/relacional, calidad de datos y arquitecturas reproducibles mediante contenedores Docker.
 

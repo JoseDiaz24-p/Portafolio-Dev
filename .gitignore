@@ -32,12 +32,19 @@ htmlcov/
 # ==========================================
 # 4. Node & Frontend (React / Vite)
 # ==========================================
+
+
+
+
+
 node_modules/
 dist/
 dist-ssr/
 *.local
 .npm
 .eslintcache
+build/
+.env
 
 # ==========================================
 # 5. Bases de Datos Locales & Almacenes Analíticos

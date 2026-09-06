@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import tarta from '../assets/tarta_limon.jpg'
-import pastel from '../assets/pastel_de_Chocolate.jpg'
+import pastel from '../assets/Pastel_de_Chocolate.jpg'
 import croissants from '../assets/Croissants_hojaldrados.jpg'
 import pan from '../assets/Pan_Chocolate.jpg'
 import macarons from '../assets/Macarons_Surtidos.jpg'

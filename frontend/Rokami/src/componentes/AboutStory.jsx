@@ -1,8 +1,9 @@
 import React from 'react'
+import logoRokami from '../assets/Logo.jpeg'
 
 export default function AboutStory() {
   return (
-    <section id="historia" className="scroll-mt-24 bg-white py-24 px-6 border-t border-[#D7D2C8]">
+    <section id="historia" className="scroll-mt-24 bg-white py-24 px-6 border-t border-[#D7D2C8] font-sans">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
         {/* Identidad y Trayectoria */}
@@ -25,8 +26,13 @@ export default function AboutStory() {
           </div>
 
           <div className="flex items-center gap-4 pt-6 border-t border-stone-200">
-            <div className="w-12 h-12 rounded-lg bg-[#2A3036] text-[#C16A28] flex items-center justify-center font-black text-xl shadow-sm border border-stone-300">
-              R
+            {/* Contenedor del Logo con máscara de bordes */}
+            <div className="h-14 w-14 rounded-lg bg-white border border-[#D7D2C8] overflow-hidden flex items-center justify-center p-0.5 shadow-sm">
+              <img 
+                src={logoRokami} 
+                alt="ROKAMI Logo" 
+                className="w-full h-full object-cover scale-[1.18] translate-x-[-1px] translate-y-[-1px]"
+              />
             </div>
             <div>
               <h4 className="font-bold uppercase tracking-wide text-[#2A3036] text-sm">

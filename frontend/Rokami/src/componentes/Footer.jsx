@@ -1,22 +1,34 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import logoRokami from '../assets/Logo.jpeg'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#191D21] text-stone-300 pt-16 pb-12 border-t-4 border-[#C16A28]">
+    <footer className="bg-[#191D21] text-stone-300 pt-16 pb-12 border-t-4 border-[#C16A28] font-sans">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#2A3036]">
           
-          {/* Identidad */}
+          {/* Identidad con Logo Real */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="h-9 w-9 bg-[#2A3036] border border-[#C16A28] rounded flex items-center justify-center text-[#C16A28] font-black text-lg">
-                R
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-1.5 rounded-md border border-[#D7D2C8] inline-flex items-center justify-center shadow-sm">
+                <img 
+                  src={logoRokami} 
+                  alt="ROKAMI Ingeniería y Construcción" 
+                  className="h-12 w-auto object-contain"
+                />
               </div>
-              <span className="font-black text-xl tracking-[0.2em] text-white uppercase">ROKAMI</span>
+              <div className="flex flex-col">
+                <span className="font-black text-lg tracking-[0.2em] text-white uppercase">
+                  ROKAMI
+                </span>
+                <span className="text-[9px] tracking-[0.2em] text-[#C16A28] font-bold uppercase">
+                  Ingeniería & Construcción
+                </span>
+              </div>
             </div>
             <p className="text-xs text-stone-400 leading-relaxed font-normal">
-              ROKAMI Ingeniería y Construcción. Especialistas en obras civiles, estructuras metálicas y proyectos habitacionales e industriales con los más altos estándares técnicos.
+              Especialistas en obras civiles, infraestructura hospitalaria, montaje de estructuras de acero y edificación habitacional con garantía técnica.
             </p>
           </div>
 

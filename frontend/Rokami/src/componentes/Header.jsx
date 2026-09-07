@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import logoRokami from '../assets/Logo.jpeg'
 
 export default function Header() {
   const [openLocation, setOpenLocation] = useState(false)
@@ -17,7 +18,7 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-[#191D21]/95 backdrop-blur-md border-b border-[#2A3036] py-3 px-4 sm:px-8 text-white transition-all shadow-md">
+    <header className="sticky top-0 z-50 bg-[#191D21]/95 backdrop-blur-md border-b border-[#2A3036] py-2 px-4 sm:px-8 text-white transition-all shadow-md font-sans">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
         {/* Lado Izquierdo: Menú Desktop */}
@@ -105,22 +106,26 @@ export default function Header() {
           </div>
         </nav>
 
-        {/* Centro: Logo SVG / Tipográfico Vectorial ROKAMI */}
-        <Link to="/" className="flex items-center gap-2 group py-1">
-          <div className="h-10 w-10 bg-[#2A3036] border border-[#C16A28] rounded flex items-center justify-center text-[#C16A28] font-black text-xl shadow-sm">
-            R
+        {/* Centro: Logo sin líneas negras residuales */}
+        <Link to="/" className="flex items-center gap-3 group py-1">
+          <div className="h-11 w-12 bg-white border border-[#D7D2C8] rounded-md overflow-hidden flex items-center justify-center p-0.5 shadow-sm transition-transform duration-300 group-hover:scale-105">
+            <img 
+              src={logoRokami} 
+              alt="ROKAMI Logo" 
+              className="h-full w-full object-cover scale-[1.18] translate-x-[-1px] translate-y-[-1px]"
+            />
           </div>
           <div className="flex flex-col">
-            <span className="font-black text-xl tracking-[0.2em] text-white group-hover:text-[#C16A28] transition-colors uppercase leading-none">
+            <span className="font-black text-lg sm:text-xl tracking-[0.2em] text-white group-hover:text-[#C16A28] transition-colors uppercase leading-none">
               ROKAMI
             </span>
-            <span className="text-[9px] uppercase tracking-[0.25em] text-[#C16A28] font-bold mt-0.5">
+            <span className="text-[9px] uppercase tracking-[0.25em] text-[#C16A28] font-bold mt-1">
               Ingeniería y Construcción
             </span>
           </div>
         </Link>
 
-        {/* Lado Derecho: Base Operativa y CTA */}
+        {/* Lado Derecho */}
         <div className="hidden lg:flex items-center space-x-6 text-xs tracking-[0.2em] font-bold text-gray-300">
           <div className="relative">
             <button
@@ -190,13 +195,13 @@ export default function Header() {
           </a>
         </div>
 
-        {/* Menú Móvil Botones */}
+        {/* Menú Móvil */}
         <div className="flex lg:hidden items-center gap-3">
           <a
             href="https://wa.me/56912345678?text=Hola%20ROKAMI,%20quisiera%20cotizar%20un%20proyecto"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#C16A28] text-white text-[11px] px-3.5 py-1.5 rounded font-bold uppercase tracking-wider shadow-sm"
+            className="bg-[#C16A28] text-white text-[11px] px-3 py-1.5 rounded font-bold uppercase tracking-wider shadow-sm"
           >
             Cotizar
           </a>
@@ -213,7 +218,7 @@ export default function Header() {
 
       </div>
 
-      {/* Desplegable Móvil */}
+      {/* Dropdown Móvil */}
       {mobileMenuOpen && (
         <div className="lg:hidden mt-3 pt-4 border-t border-[#2A3036] space-y-4 px-3 pb-5 text-center bg-[#191D21] rounded-xl">
           <Link

@@ -305,7 +305,7 @@ export default function MenuSection() {
                 </div>
 
                 <span className="text-[11px] uppercase tracking-wider font-bold bg-white/20 backdrop-blur text-white px-3 py-1.5 rounded border border-white/30 group-hover:bg-white group-hover:text-[#191D21] transition-colors">
-                  🔍 Pantalla Completa
+                Pantalla Completa
                 </span>
               </div>
             </div>

@@ -1,18 +1,16 @@
-"""
-Django settings for config project.
-"""
-
+import os
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(3ods1em90c^(9t#=x9k&sprg)l6(@m6#^q33vs^g^)i=34@9j'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-(3ods1em90c^(9t#=x9k&sprg)l6(@m6#^q33vs^g^)i=34@9j')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -35,8 +33,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Debe ir lo más arriba posible
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -64,7 +63,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database MySQL
+# Database: híbrida (usa DATABASE_URL en la nube o MySQL local por defecto)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -78,6 +77,10 @@ DATABASES = {
         }
     }
 }
+
+# Si existe DATABASE_URL en variables de entorno (Render / Railway), la sobreescribe automáticamente
+if os.getenv('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -93,8 +96,18 @@ TIME_ZONE = 'America/Santiago'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files & WhiteNoise (Sintaxis moderna con STORAGES)
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = True

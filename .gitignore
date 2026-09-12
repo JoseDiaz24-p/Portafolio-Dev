@@ -32,11 +32,6 @@ htmlcov/
 # ==========================================
 # 4. Node & Frontend (React / Vite)
 # ==========================================
-
-
-
-
-
 node_modules/
 dist/
 dist-ssr/
@@ -47,15 +42,13 @@ build/
 .env
 
 # ==========================================
-# 5. Bases de Datos Locales & Almacenes Analíticos
+# 5. Bases de Datos Locales & Datasets Pesados
 # ==========================================
 *.db
 *.sqlite
 *.sqlite3
 *.db-journal
-
-# Descomentar si no deseas versionar los datasets crudos pesados:
-# *.csv
+*.csv
 
 # ==========================================
 # 6. Editores e IDEs (VS Code, Spyder, JetBrains)
@@ -72,5 +65,4 @@ build/
 # ==========================================
 Thumbs.db
 Desktop.ini
-.DS_Store.env
-.env
+.DS_Store

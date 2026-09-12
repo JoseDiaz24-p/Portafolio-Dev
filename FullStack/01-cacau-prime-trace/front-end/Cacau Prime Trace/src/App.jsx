@@ -3,7 +3,7 @@ import axios from 'axios';
 import { PlusCircle, MapPin, Search, LogOut, ShieldCheck, UserCheck, Lock, User } from 'lucide-react';
 import './App.css';
 
-const API_BASE_URL = `http://${window.location.hostname}:8000/api`;
+const API_BASE_URL = 'https://cacau-prime-backend.onrender.com/api';
 
 function App() {
   // Estado de Autenticación

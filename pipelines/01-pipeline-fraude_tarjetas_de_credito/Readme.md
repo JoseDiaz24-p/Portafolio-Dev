@@ -1,127 +1,499 @@
-# 💳 Credit Card Fraud Detection Pipeline (ETL & Analytical Views)
+# 💳 Credit Card Fraud Detection Pipeline
 
-Pipeline automatizado de ingeniería de datos para la extracción, limpieza, enriquecimiento y modelado analítico de transacciones financieras, enfocado en la detección temprana de anomalías y prevención de fraude en comercios.
+**Proyecto 01 — Data Engineering**
 
----
+Pipeline ETL desarrollado en Python para procesar transacciones financieras, aplicar controles de calidad de datos, generar variables derivadas y cargar la información procesada en SQLite para su posterior análisis mediante SQL.
 
-## 📐 Arquitectura del Flujo de Datos
+El proyecto representa la base del portafolio de **Data Engineering**, demostrando el flujo fundamental:
 
-El pipeline sigue una arquitectura por capas desacoplada y reproducible en contenedores:
-
-```mermaid
-flowchart LR
-    subgraph Origen
-        CSV[("📄 credit_card.csv\n(10,000 transacciones)")]
-    end
-
-    subgraph "Procesamiento ETL (Docker / Python 3.11)"
-        EXT["📥 Extracción\n(Pandas / OS I/O)"]
-        VAL{"🛡️ Data Quality Gate\n• Duplicados (drop_duplicates)\n• Nulos (dropna)\n• Consistencia de IDs"}
-        TRF["⚙️ Enriquecimiento\n• Segmentación por bins (pd.cut)\n• Clasificación de riesgo (Lambda)"]
-        LOG["📝 Logging Dual\n(registro_fraudes.log + Consola)"]
-    end
-
-    subgraph "Almacén Analítico (Data Warehouse Local)"
-        DWH[("🗄️ SQLite\n(transacciones_bancarias)")]
-        V1["📊 Vista SQL: v_resumen_categoria\n(Fraude y pérdida por comercio)"]
-        V2["📊 Vista SQL: v_resumen_riesgo\n(KPIs por rango de monto)"]
-    end
-
-    CSV --> EXT
-    EXT --> VAL
-    VAL --> TRF
-    TRF --> LOG
-    TRF --> DWH
-    DWH --> V1
-    DWH --> V2
+```text
+Extract → Transform → Load → Analytics
 ```
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🎯 Objetivo
 
-* **Lenguaje:** Python 3.11
-* **Manipulación de Datos:** Pandas 3.x, NumPy
-* **Motor Analítico:** SQLite3 (Modelado Relacional y Vistas Agregadas)
-* **Infraestructura y Contenedores:** Docker & Docker Compose
-* **Trazabilidad:** Módulo `logging` nativo (Handlers simultáneos para archivo persistente y consola UTF-8)
+Construir un pipeline reproducible capaz de:
 
----
-
-## 🔍 Reglas de Negocio y Transformaciones
-
-1. **Garantía de Unicidad:** Deduplicación estricta a nivel de clave primaria transaccional (`transaction_id`).
-2. **Segmentación de Exposición Financiera:** Clasificación de transacciones mediante discretización en rangos (`pd.cut`):
-   * `Bajo (0 - 50 USD)`
-   * `Medio (50 - 200 USD)`
-   * `Alto (200 - 1000 USD)`
-   * `Crítico (> 1000 USD)`
-3. **Capa Semántica SQL:**
-   * `v_resumen_categoria`: Consolida volumen total, tasa de fraude, ticket promedio y monto total defraudado por categoría (`merchant_category`).
-   * `v_resumen_riesgo`: Métricas agregadas por nivel de riesgo monetario para análisis forense.
+* Extraer transacciones desde un archivo CSV.
+* Validar la estructura de los datos.
+* Detectar registros inválidos.
+* Eliminar duplicados y valores no válidos.
+* Generar variables derivadas.
+* Clasificar transacciones por rango de monto.
+* Almacenar los datos procesados en SQLite.
+* Crear vistas SQL para análisis de fraude.
+* Registrar el proceso mediante logging.
+* Ejecutar el pipeline mediante Python o Docker.
 
 ---
 
-## 🚀 Despliegue y Ejecución
+# 🏗️ Arquitectura
 
-### Opción 1: Con Docker (Recomendado / Entorno Aislado)
-
-No requiere tener instalado Python ni librerías locales en la máquina anfitriona.
-
-```bash
-# 1. Posicionarse en el directorio del pipeline
-cd pipelines/01-pipeline-fraude_tarjetas_de_credito
-
-# 2. Levantar el contenedor y ejecutar el flujo
-docker compose up
+```text
+credit_card.csv
+       │
+       ▼
+   EXTRACT
+       │
+       ▼
+DATA QUALITY
+       │
+       ├── Columnas requeridas
+       ├── Duplicados
+       ├── Valores nulos
+       ├── is_fraud inválido
+       ├── amount inválido
+       └── transaction_id vacío
+       │
+       ▼
+  TRANSFORM
+       │
+       ├── rango_monto
+       └── tipo_transaccion
+       │
+       ▼
+    LOAD
+       │
+       ▼
+SQLite
+       │
+       ├── v_resumen_categoria
+       │
+       └── v_resumen_riesgo
 ```
 
-> **Nota:** Mediante volúmenes montados (`volumes: - ./:/app`), tanto la base de datos `fraud_warehouse.db` como el log de auditoría `registro_fraudes.log` se sincronizan automáticamente en tu disco duro local al finalizar la corrida.
+---
 
-### Opción 2: Ejecución Local en Windows / Linux
+# 📂 Estructura del proyecto
 
-```bash
-# 1. Crear y activar entorno virtual
-python -m venv venv
-# Windows:
-.\venv\Scripts\activate
-# Linux/Mac:
-source venv/bin/activate
+```text
+01-pipeline-fraude_tarjetas_de_credito/
+│
+├── data/
+│   └── credit_card.csv
+│
+├── Dockerfile
+├── docker-compose.yml
+├── etl_pipeline.py
+├── requirements.txt
+└── Readme.md
+```
 
-# 2. Instalar dependencias requeridas
+Durante la ejecución se generan archivos locales que no forman parte del código fuente:
+
+```text
+fraud_warehouse.db
+registro_fraudes.log
+```
+
+Estos archivos se encuentran excluidos del control de versiones.
+
+---
+
+# 🔄 Pipeline ETL
+
+## 1. Extract
+
+El pipeline carga:
+
+```text
+data/credit_card.csv
+```
+
+mediante Pandas.
+
+Antes de procesar los datos se verifica que el archivo exista y se registra la cantidad de registros extraídos.
+
+---
+
+## 2. Data Quality
+
+Antes de cargar los datos se realizan diferentes validaciones.
+
+### Columnas requeridas
+
+El pipeline verifica la existencia de:
+
+```text
+transaction_id
+amount
+is_fraud
+merchant_category
+```
+
+Si falta alguna de estas columnas, el proceso genera un error.
+
+### Duplicados
+
+Se verifica la unicidad de:
+
+```text
+transaction_id
+```
+
+Los registros duplicados se eliminan conservando la primera aparición.
+
+### Valores nulos
+
+Se eliminan registros que contengan valores nulos en las columnas requeridas.
+
+### Valores de fraude
+
+La variable:
+
+```text
+is_fraud
+```
+
+debe contener únicamente:
+
+```text
+0 → Transacción legítima
+1 → Transacción fraudulenta
+```
+
+Los valores diferentes son considerados inválidos.
+
+### Montos
+
+Se valida que:
+
+```text
+amount > 0
+```
+
+Los montos menores o iguales a cero son considerados inválidos.
+
+### Identificador de transacción
+
+Los `transaction_id` vacíos también son descartados.
+
+---
+
+# 🧮 Feature Engineering
+
+Una vez superadas las validaciones, el pipeline genera variables adicionales.
+
+## Rango de monto
+
+Las transacciones son clasificadas en cuatro categorías:
+
+| Rango        | Categoría |
+| ------------ | --------- |
+| 0 – 49.99    | Bajo      |
+| 50 – 199.99  | Medio     |
+| 200 – 999.99 | Alto      |
+| ≥ 1000       | Crítico   |
+
+La variable generada es:
+
+```text
+rango_monto
+```
+
+---
+
+## Tipo de transacción
+
+A partir de `is_fraud` se genera:
+
+```text
+tipo_transaccion
+```
+
+con los valores:
+
+```text
+Fraude
+Legítima
+```
+
+---
+
+# 🗄️ Almacenamiento
+
+Los datos procesados son almacenados en:
+
+```text
+fraud_warehouse.db
+```
+
+utilizando SQLite.
+
+La tabla principal es:
+
+```text
+transacciones_bancarias
+```
+
+La base de datos es generada automáticamente durante la ejecución del pipeline.
+
+---
+
+# 📊 Capa analítica SQL
+
+El proyecto genera dos vistas analíticas.
+
+## `v_resumen_categoria`
+
+Permite analizar el comportamiento del fraude por categoría de comercio.
+
+Incluye:
+
+* Categoría de comercio.
+* Total de operaciones.
+* Total de fraudes.
+* Tasa de fraude.
+* Ticket promedio.
+* Total defraudado.
+
+La tasa de fraude se calcula como:
+
+```text
+fraudes / total de operaciones × 100
+```
+
+---
+
+## `v_resumen_riesgo`
+
+Permite analizar el fraude según el rango de monto.
+
+Incluye:
+
+* Rango de monto.
+* Total de transacciones.
+* Casos de fraude.
+* Tasa de fraude.
+* Monto promedio.
+* Monto total defraudado.
+
+---
+
+# 📈 Resultado de una ejecución
+
+En una ejecución del pipeline se procesaron:
+
+```text
+Registros extraídos:       10,000
+Duplicados detectados:          0
+Registros con nulos:            0
+is_fraud inválidos:              0
+Montos inválidos:                1
+Registros eliminados:            1
+Registros procesados:        9,999
+```
+
+El pipeline detectó correctamente un registro con un monto inválido y lo eliminó antes de cargar los datos en SQLite.
+
+---
+
+## Análisis por rango de monto
+
+Resultado obtenido:
+
+| Rango           | Transacciones | Fraudes |   Tasa |
+| --------------- | ------------: | ------: | -----: |
+| Crítico (>1000) |            35 |       5 | 14.29% |
+| Bajo (0-50)     |         2,471 |      43 |  1.74% |
+| Alto (200-1000) |         3,152 |      49 |  1.55% |
+| Medio (50-200)  |         4,341 |      54 |  1.24% |
+
+Estos resultados corresponden a una ejecución concreta del dataset incluido en el proyecto.
+
+---
+
+## Análisis por categoría
+
+El pipeline también genera métricas por categoría de comercio:
+
+| Categoría   | Operaciones | Fraudes |  Tasa |
+| ----------- | ----------: | ------: | ----: |
+| Grocery     |       1,944 |      39 | 2.01% |
+| Food        |       2,093 |      35 | 1.67% |
+| Travel      |       1,989 |      29 | 1.46% |
+| Electronics |       1,923 |      24 | 1.25% |
+| Clothing    |       2,050 |      24 | 1.17% |
+
+Estas métricas permiten utilizar SQL como una capa analítica sobre los datos procesados.
+
+---
+
+# 📝 Logging
+
+El pipeline registra información tanto en:
+
+```text
+Consola
+```
+
+como en:
+
+```text
+registro_fraudes.log
+```
+
+El logging permite visualizar:
+
+* Inicio de cada etapa.
+* Cantidad de registros extraídos.
+* Resultados de las validaciones.
+* Registros eliminados.
+* Cantidad de registros procesados.
+* Creación de las estructuras SQLite.
+* Resultados de las consultas analíticas.
+* Errores durante la ejecución.
+
+---
+
+# 🐳 Docker
+
+El proyecto incluye:
+
+```text
+Dockerfile
+docker-compose.yml
+```
+
+Esto permite ejecutar el pipeline en un entorno reproducible.
+
+Desde el directorio del proyecto:
+
+```cmd
+docker compose up --build
+```
+
+---
+
+# 🐍 Ejecución local
+
+Requisitos:
+
+* Python 3.11 o compatible.
+* Pip.
+
+Crear un entorno virtual:
+
+```cmd
+python -m venv .venv
+```
+
+Activarlo:
+
+```cmd
+.venv\Scripts\activate
+```
+
+Instalar dependencias:
+
+```cmd
 pip install -r requirements.txt
+```
 
-# 3. Ejecutar pipeline
+Ejecutar el pipeline:
+
+```cmd
 python etl_pipeline.py
 ```
 
----
-
-## 📊 Salida de Ejecución y Auditoría
-
-Al finalizar, el pipeline reporta las métricas directamente en consola y las persiste en `registro_fraudes.log`:
+Al finalizar se generará:
 
 ```text
-2026-09-03 16:11:49 [INFO] etl_pipeline : [1/3] Se Extraen Los datos desde: /app/data/credit_card.csv
-2026-09-03 16:11:49 [INFO] etl_pipeline : -> Total transacciones extraídas: 10,000
-2026-09-03 16:11:49 [INFO] etl_pipeline : [2/3] Transformando y enriqueciendo transacciones...
-2026-09-03 16:11:49 [INFO] etl_pipeline : -> Registros duplicados eliminados: 0
-2026-09-03 16:11:49 [INFO] etl_pipeline : -> Total transacciones procesadas: 10,000
-2026-09-03 16:11:50 [INFO] etl_pipeline : [3/3] Cargando datos en almacén relacional...
-2026-09-03 16:11:50 [INFO] etl_pipeline : -> Tabla 'transacciones_bancarias' y vistas analíticas creadas con éxito.
-2026-09-03 16:11:50 [INFO] etl_pipeline : --- REPORTE DE FRAUDE POR CATEGORÍA DE COMERCIO (GENERADO POR SQL) ---
-2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Clothing        | Transacciones: 2050  | Fraudes: 24  | Defraudado: $3,884.94
-2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Electronics     | Transacciones: 1923  | Fraudes: 24  | Defraudado: $5,855.07
-2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Food            | Transacciones: 2093  | Fraudes: 35  | Defraudado: $7,534.58
-2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Grocery         | Transacciones: 1944  | Fraudes: 39  | Defraudado: $8,684.52
-2026-09-03 16:11:50 [INFO] etl_pipeline : Comercio: Travel          | Transacciones: 1990  | Fraudes: 29  | Defraudado: $6,684.52
-2026-09-03 16:11:50 [INFO] etl_pipeline : ✅ Pipeline Financiero ejecutado exitosamente.
+fraud_warehouse.db
+registro_fraudes.log
 ```
 
 ---
 
-## 📈 Próximos Pasos de Escalabilidad
+# 🧰 Tecnologías
 
-* **Desacoplamiento de Almacenamiento:** Migrar el almacenamiento local de CSV hacia buckets de almacenamiento de objetos (Amazon S3 o MinIO autohospedado).
-* **Orquestación Programada:** Envolver las fases de extracción y carga en tareas parametrizadas mediante DAGs de Apache Airflow.
-* **Cargas Incrementales:** Implementar detección de cambios (*Change Data Capture* o marcas de tiempo de ingestión) para sustituir el reemplazo total de la tabla por cargas append particionadas por fecha.
+* Python 3.11
+* Pandas
+* SQLite
+* SQL
+* Docker
+* Docker Compose
+* Logging
+* Git
+
+---
+
+# 📚 Conceptos demostrados
+
+Este proyecto demuestra conocimientos prácticos en:
+
+```text
+ETL
+│
+├── Extract
+├── Transform
+└── Load
+
+Data Engineering
+│
+├── Data Quality
+├── Feature Engineering
+├── Data Validation
+└── Logging
+
+Data Analytics
+│
+├── SQL
+├── Aggregations
+├── Analytical Views
+└── Fraud Metrics
+```
+
+---
+
+# ⚠️ Limitaciones
+
+Este proyecto está diseñado como una implementación educativa y de portafolio.
+
+Actualmente:
+
+* El origen de datos es un archivo CSV.
+* El almacenamiento utiliza SQLite.
+* El pipeline se ejecuta manualmente.
+* No existe procesamiento incremental.
+* No existe orquestación externa.
+* Las validaciones corresponden a reglas implementadas dentro del pipeline.
+
+---
+
+# 🚀 Próximas mejoras
+
+Como evolución futura del proyecto podrían incorporarse:
+
+* Tests automatizados.
+* Procesamiento incremental.
+* Orquestación mediante Airflow o Prefect.
+* Almacenamiento en PostgreSQL.
+* Formatos columnares como Parquet.
+* Mayor cantidad de métricas analíticas.
+* Dashboard para visualización de resultados.
+* Validaciones automatizadas más extensas.
+
+---
+
+# 🎯 Objetivo dentro del portafolio
+
+Este proyecto corresponde al **primer nivel del portafolio de Data Engineering**.
+
+Su propósito es demostrar los fundamentos necesarios para construir un pipeline:
+
+```text
+Datos crudos
+     ↓
+Validación
+     ↓
+Transformación
+     ↓
+Almacenamiento
+     ↓
+Análisis
+```
+
+Los proyectos posteriores incorporan progresivamente mayor complejidad en calidad de datos, análisis, transformación e integración con otras tecnologías.

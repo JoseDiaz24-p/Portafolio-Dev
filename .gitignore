@@ -66,3 +66,8 @@ build/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+
+# Datasets públicos pequeños utilizados para reproducir proyectos
+!pipelines/01-pipeline-fraude_tarjetas_de_credito/data/credit_card.csv
+!pipelines/03-pipeline-fintech-data-experience-agent/data/digital_wallet_ltv_dataset.csv

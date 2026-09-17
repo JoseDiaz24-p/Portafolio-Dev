@@ -1,10 +1,17 @@
 # 💳 BNPL Analytics Pipeline
 
-**Proyecto 02 — Data Engineering & Data Analytics**
+## Proyecto 02 — Data Engineering & Data Analytics
 
-Pipeline ETL desarrollado en Python para procesar datos de operaciones **Buy Now, Pay Later (BNPL)**, aplicar controles de calidad, realizar transformaciones y generar una capa analítica en SQLite.
+Pipeline ETL desarrollado en **Python y Pandas** para procesar información
+relacionada con operaciones **Buy Now Pay Later (BNPL)**, aplicar controles de
+**Data Quality**, generar variables derivadas y almacenar los datos procesados
+en **SQLite** para su posterior análisis mediante SQL.
 
-El proyecto amplía los fundamentos del Proyecto 01 incorporando más reglas de validación, feature engineering y múltiples vistas SQL para analizar patrones de incumplimiento según edad, proveedor y categoría de compra.
+Este proyecto representa el segundo nivel del portfolio de **Data Engineering**,
+incorporando sobre el pipeline anterior una mayor cantidad de validaciones,
+segmentaciones y métricas analíticas.
+
+El flujo principal del proyecto es:
 
 ```text
 Extract → Data Quality → Transform → Load → Analytics
@@ -12,60 +19,77 @@ Extract → Data Quality → Transform → Load → Analytics
 
 ---
 
-# 🎯 Objetivo
+## 🎯 Objetivo
 
-Construir un pipeline reproducible capaz de:
+Construir un pipeline capaz de:
 
-* Extraer 50.000 operaciones desde un archivo CSV.
-* Validar la estructura del dataset.
-* Detectar registros duplicados y valores nulos.
-* Validar edad, ingresos, monto de compra y Credit Score.
-* Validar los estados de pago.
-* Generar variables derivadas.
-* Almacenar los datos procesados en SQLite.
-* Crear vistas analíticas mediante SQL.
-* Registrar todo el proceso mediante logging.
-* Ejecutar el pipeline localmente o mediante Docker.
+- Extraer información desde un archivo CSV.
+- Validar la estructura del dataset.
+- Convertir y validar tipos de datos.
+- Detectar registros duplicados.
+- Identificar valores nulos.
+- Validar rangos de edad.
+- Validar ingresos.
+- Validar montos de compra.
+- Validar rangos de `Credit_Score`.
+- Validar estados de pago.
+- Generar variables derivadas.
+- Segmentar clientes por edad.
+- Segmentar clientes por nivel crediticio.
+- Transformar los estados de pago.
+- Almacenar los datos procesados en SQLite.
+- Crear vistas SQL analíticas.
+- Registrar el proceso mediante logging.
+- Ejecutar el pipeline mediante Python o Docker.
 
 ---
 
 # 🏗️ Arquitectura
 
 ```text
-                    bnpl.csv
-                       │
-                       ▼
-                    EXTRACT
-                       │
-                       ▼
-                 DATA QUALITY
-                       │
-       ┌───────────────┼──────────────────┐
-       ▼               ▼                  ▼
- Transaction_ID   Variables numéricas   Estados
-       │               │                  │
-       └───────────────┼──────────────────┘
-                       ▼
-                   TRANSFORM
-                       │
-       ┌───────────────┼──────────────────┐
-       ▼               ▼                  ▼
-   rango_edad    nivel_credito       estado_pago
-                       │
-                       ▼
-                     LOAD
-                       │
-                       ▼
-                    SQLite
-                       │
-          ┌────────────┼────────────┐
-          ▼            ▼            ▼
-      Por edad    Por proveedor  Por categoría
+bnpl.csv
+   │
+   ▼
+EXTRACT
+   │
+   ▼
+DATA QUALITY
+   │
+   ├── Columnas requeridas
+   ├── Conversión numérica
+   ├── Duplicados
+   ├── Valores nulos
+   ├── Edad válida
+   ├── Ingresos válidos
+   ├── Purchase Amount válido
+   ├── Credit Score válido
+   ├── Repayment Status válido
+   └── Transaction ID válido
+   │
+   ▼
+TRANSFORM
+   │
+   ├── rango_edad
+   ├── nivel_credito
+   └── estado_pago
+   │
+   ▼
+LOAD
+   │
+   ▼
+SQLite
+   │
+   ├── v_riesgo_por_edad
+   ├── v_riesgo_por_proveedor
+   └── v_riesgo_por_categoria
+   │
+   ▼
+SQL ANALYTICS
 ```
 
 ---
 
-# 📂 Estructura
+# 📂 Estructura del proyecto
 
 ```text
 02-pipeline-bnpl/
@@ -73,54 +97,22 @@ Construir un pipeline reproducible capaz de:
 ├── data/
 │   └── bnpl.csv
 │
-├── bnpl_pipeline.py
 ├── Dockerfile
 ├── docker-compose.yml
+├── bnpl_pipeline.py
 ├── requirements.txt
-└── README.md
+└── README.MD
 ```
 
-Durante la ejecución se generan archivos locales:
+Durante la ejecución se generan archivos locales como:
 
 ```text
 bnpl_analytics.db
 registro_bnpl.log
 ```
 
-Estos archivos son artefactos generados por el pipeline y no forman parte del código fuente.
-
----
-
-# 📄 Dataset
-
-El dataset contiene:
-
-```text
-50.000 registros
-9 columnas
-```
-
-Columnas principales:
-
-| Campo               | Descripción                   |
-| ------------------- | ----------------------------- |
-| `Transaction_ID`    | Identificador de la operación |
-| `Customer_Age`      | Edad del cliente              |
-| `Gender`            | Género                        |
-| `Annual_Income`     | Ingreso anual                 |
-| `Credit_Score`      | Puntaje crediticio            |
-| `Purchase_Category` | Categoría de compra           |
-| `BNPL_Provider`     | Proveedor BNPL                |
-| `Purchase_Amount`   | Monto de compra               |
-| `Repayment_Status`  | Estado del pago               |
-
-Estados disponibles:
-
-```text
-Paid On Time
-Late Payment
-Defaulted
-```
+Estos archivos son generados por el pipeline y se mantienen fuera del control
+de versiones.
 
 ---
 
@@ -128,29 +120,34 @@ Defaulted
 
 ## 1. Extract
 
-El pipeline obtiene los datos desde:
+El pipeline carga el dataset:
 
 ```text
 data/bnpl.csv
 ```
 
-Antes de procesarlos verifica que el archivo exista.
+utilizando **Pandas**.
 
-La ejecución validada obtuvo:
+Antes de comenzar el procesamiento se verifica que el archivo exista.
+
+El pipeline registra mediante logging la cantidad de registros extraídos.
+
+En la ejecución utilizada para documentar este proyecto se procesaron:
 
 ```text
-Registros extraídos: 50.000
+50,000 registros
 ```
 
 ---
 
-# 2. Data Quality
+# 🧪 2. Data Quality
 
-Antes de realizar las transformaciones se valida la estructura y consistencia de los datos.
+La etapa de Data Quality permite validar que los datos cumplan las condiciones
+necesarias antes de almacenarlos.
 
 ## Columnas requeridas
 
-Se comprueba la existencia de las nueve columnas esperadas:
+El pipeline verifica la existencia de las siguientes columnas:
 
 ```text
 Transaction_ID
@@ -164,53 +161,103 @@ Purchase_Amount
 Repayment_Status
 ```
 
-## Identificador
+Si falta alguna columna requerida, el proceso genera un error.
 
-Se controla la existencia de duplicados en:
+---
+
+## Conversión de datos numéricos
+
+Las siguientes columnas son convertidas a valores numéricos antes de realizar
+las validaciones:
+
+```text
+Customer_Age
+Annual_Income
+Credit_Score
+Purchase_Amount
+```
+
+Esto permite detectar valores que no puedan ser utilizados correctamente en
+las operaciones posteriores.
+
+---
+
+## Duplicados
+
+Se verifica la existencia de registros duplicados utilizando:
 
 ```text
 Transaction_ID
 ```
 
+Los registros duplicados son eliminados conservando la primera aparición.
+
+---
+
 ## Valores nulos
 
-Se revisan todas las columnas requeridas antes de la carga.
+Se verifican valores nulos en el dataset y se eliminan los registros que no
+puedan continuar correctamente hacia las etapas posteriores.
+
+---
 
 ## Edad
 
-Se validan edades dentro del rango observado por el dataset:
+Se valida que:
 
 ```text
-18–64
+18 ≤ Customer_Age ≤ 64
 ```
+
+Los registros fuera de este rango son considerados inválidos.
+
+---
 
 ## Ingresos
 
-Se descartan valores:
+Se valida que:
 
 ```text
-Annual_Income <= 0
+Annual_Income > 0
 ```
+
+Los ingresos menores o iguales a cero son considerados inválidos.
+
+---
 
 ## Monto de compra
 
-Se descartan valores:
+Se valida que:
 
 ```text
-Purchase_Amount <= 0
+Purchase_Amount > 0
 ```
+
+Los montos menores o iguales a cero son considerados inválidos.
+
+---
 
 ## Credit Score
 
-Se valida el rango:
+El pipeline valida que el puntaje crediticio se encuentre dentro del rango:
 
 ```text
-300–849
+300 ≤ Credit_Score ≤ 849
 ```
+
+Los valores fuera de este rango son considerados inválidos.
+
+---
 
 ## Estado de pago
 
-Los valores permitidos son:
+El campo:
+
+```text
+Repayment_Status
+```
+
+debe contener uno de los siguientes valores:
 
 ```text
 Paid On Time
@@ -218,78 +265,94 @@ Late Payment
 Defaulted
 ```
 
----
-
-# 📊 Resultado de Data Quality
-
-En la ejecución validada:
-
-| Control                | Resultado |
-| ---------------------- | --------: |
-| Registros extraídos    |    50.000 |
-| Duplicados             |         0 |
-| Registros con nulos    |         0 |
-| Edades inválidas       |         0 |
-| Ingresos inválidos     |         0 |
-| Montos inválidos       |         0 |
-| Credit Score inválidos |         0 |
-| Estados inválidos      |         0 |
-| Registros eliminados   |         0 |
-| Registros procesados   |    50.000 |
-
-El dataset pasó todas las reglas de calidad implementadas.
+Los valores diferentes son considerados inválidos.
 
 ---
 
-# 🧮 Feature Engineering
+## Identificador de transacción
 
-El pipeline genera tres variables derivadas.
+Los identificadores vacíos también son descartados.
 
-## `rango_edad`
+---
 
-Las edades se agrupan en:
+# 🧮 3. Feature Engineering
 
-```text
-18–25   → Joven
-26–40   → Adulto Joven
-41–60   → Adulto
-61+     → Senior
-```
+Una vez completadas las validaciones, el pipeline genera variables adicionales
+para facilitar el análisis.
 
-## `nivel_credito`
+---
 
-Para fines exclusivamente analíticos, el Credit Score se segmenta en:
+## Rango de edad
 
-```text
-300–579   → Bajo
-580–669   → Medio
-670–739   → Bueno
-740–849   → Excelente
-```
+La edad de los clientes se transforma en segmentos:
 
-Estas categorías son reglas de segmentación utilizadas por este proyecto y no representan una evaluación crediticia real.
+| Rango | Segmento |
+|---|---|
+| 18 – 25 | Joven |
+| 26 – 40 | Adulto Joven |
+| 41 – 60 | Adulto |
+| > 60 | Senior |
 
-## `estado_pago`
-
-Los estados originales se normalizan:
+La variable generada es:
 
 ```text
-Paid On Time → Al Día
-Late Payment → Pago Tardío
-Defaulted    → Incumplimiento
+rango_edad
 ```
 
 ---
 
-# 🗄️ Almacenamiento
+## Nivel crediticio
 
-Los datos transformados se cargan en:
+El `Credit_Score` se transforma en segmentos analíticos:
+
+| Credit Score | Nivel |
+|---|---|
+| 300 – 578 | Bajo |
+| 579 – 668 | Medio |
+| 669 – 738 | Bueno |
+| 739 – 849 | Excelente |
+
+La variable generada es:
+
+```text
+nivel_credito
+```
+
+Esta clasificación se utiliza exclusivamente para análisis y segmentación del
+dataset.
+
+**No representa una decisión crediticia real ni un modelo de evaluación de
+riesgo financiero.**
+
+---
+
+## Estado de pago
+
+Los estados originales son transformados para facilitar su interpretación:
+
+| Estado original | Estado transformado |
+|---|---|
+| Paid On Time | Al Día |
+| Late Payment | Pago Tardío |
+| Defaulted | Incumplimiento |
+
+La variable generada es:
+
+```text
+estado_pago
+```
+
+---
+
+# 🗄️ 4. Almacenamiento
+
+Los datos procesados son almacenados en:
 
 ```text
 bnpl_analytics.db
 ```
 
-utilizando SQLite.
+utilizando **SQLite**.
 
 La tabla principal es:
 
@@ -297,116 +360,169 @@ La tabla principal es:
 clientes_credito
 ```
 
+La base de datos se genera automáticamente durante la ejecución del pipeline.
+
+La tabla procesada se reconstruye a partir del dataset de entrada en cada
+ejecución.
+
 ---
 
-# 📈 Capa analítica SQL
+# 📊 Capa analítica SQL
 
-El pipeline genera tres vistas.
+El proyecto genera tres vistas SQL orientadas al análisis del comportamiento
+de las operaciones BNPL.
+
+---
 
 ## `v_riesgo_por_edad`
 
-Agrupa las operaciones según `rango_edad`.
+Permite analizar las operaciones según el segmento de edad.
 
-Métricas:
+Incluye:
 
-* Total de operaciones.
-* Total de incumplimientos.
-* Tasa de incumplimiento.
-* Compra promedio.
+- Segmento de edad.
+- Cantidad de operaciones.
+- Cantidad de incumplimientos.
+- Tasa de incumplimiento.
+- Monto promedio de compra.
+
+La tasa se calcula a partir de:
+
+```text
+incumplimientos / total de operaciones × 100
+```
+
+---
 
 ## `v_riesgo_por_proveedor`
 
-Agrupa las operaciones según:
+Permite analizar las operaciones según el proveedor BNPL.
 
-```text
-BNPL_Provider
-```
+Incluye:
 
-Métricas:
+- Proveedor.
+- Cantidad de operaciones.
+- Cantidad de incumplimientos.
+- Tasa de incumplimiento.
+- Monto total de compras.
 
-* Total de operaciones.
-* Total de incumplimientos.
-* Tasa de incumplimiento.
-* Monto total de compras.
+---
 
 ## `v_riesgo_por_categoria`
 
-Agrupa las operaciones según:
+Permite analizar las operaciones según la categoría de compra.
+
+Incluye:
+
+- Categoría.
+- Cantidad de operaciones.
+- Cantidad de incumplimientos.
+- Tasa de incumplimiento.
+- Monto promedio de compra.
+- Monto total de compras.
+
+---
+
+# 📈 Resultado de una ejecución
+
+En la ejecución utilizada para documentar el proyecto se obtuvieron:
 
 ```text
-Purchase_Category
+Registros extraídos:       50,000
+Registros eliminados:           0
+Registros procesados:       50,000
 ```
 
-Métricas:
+Los controles de calidad implementados no detectaron registros inválidos en
+esta ejecución.
 
-* Total de operaciones.
-* Total de incumplimientos.
-* Tasa de incumplimiento.
-* Compra promedio.
-* Monto total de compras.
+### Controles realizados
 
-Las vistas se eliminan y recrean durante cada ejecución para mantener su definición sincronizada con el pipeline.
+```text
+Credit Score fuera de rango:       0
+Edad fuera de rango:               0
+Ingresos inválidos:                0
+Purchase Amount inválido:          0
+Estado de pago inesperado:         0
+Duplicados:                        0
+Valores nulos:                     0
+```
 
----
-
-# 📊 Resultados analíticos
-
-## Incumplimiento por rango de edad
-
-| Grupo                | Operaciones | Incumplimientos |   Tasa |
-| -------------------- | ----------: | --------------: | -----: |
-| Joven (18-25)        |       8.421 |             854 | 10,14% |
-| Senior (>60)         |       4.290 |             383 |  8,93% |
-| Adulto (41-60)       |      21.143 |           1.801 |  8,52% |
-| Adulto Joven (26-40) |      16.146 |           1.341 |  8,31% |
+Estos resultados corresponden a una ejecución concreta del dataset utilizado
+en el proyecto.
 
 ---
 
-## Incumplimiento por proveedor
+# 📊 Análisis por rango de edad
 
-| Proveedor | Operaciones | Incumplimientos |  Tasa |
-| --------- | ----------: | --------------: | ----: |
-| Sezzle    |      12.501 |           1.114 | 8,91% |
-| Afterpay  |      12.536 |           1.114 | 8,89% |
-| Affirm    |      12.418 |           1.073 | 8,64% |
-| Klarna    |      12.545 |           1.078 | 8,59% |
+Resultado obtenido:
+
+| Segmento | Operaciones | Incumplimientos | Tasa | Compra promedio |
+|---|---:|---:|---:|---:|
+| Joven | 8,421 | 854 | 10.14% | 557.37 |
+| Senior | 4,290 | 383 | 8.93% | 568.36 |
+| Adulto | 21,143 | 1,801 | 8.52% | 560.77 |
+| Adulto Joven | 16,146 | 1,341 | 8.31% | 568.12 |
+
+Las métricas son descriptivas y corresponden al dataset procesado por el
+pipeline.
 
 ---
 
-## Incumplimiento por categoría
+# 🏦 Análisis por proveedor BNPL
 
-| Categoría        | Operaciones | Incumplimientos |  Tasa |
-| ---------------- | ----------: | --------------: | ----: |
-| Electronics      |       8.303 |             794 | 9,56% |
-| Travel           |       8.401 |             795 | 9,46% |
-| Fashion          |       8.307 |             729 | 8,78% |
-| Beauty           |       8.381 |             710 | 8,47% |
-| Groceries        |       8.240 |             697 | 8,46% |
-| Home & Furniture |       8.368 |             654 | 7,82% |
+Resultado obtenido:
 
-Estas métricas son descriptivas del dataset utilizado y no deben interpretarse como un modelo predictivo de riesgo.
+| Proveedor | Operaciones | Incumplimientos | Tasa | Monto total |
+|---|---:|---:|---:|---:|
+| Sezzle | 12,501 | 1,114 | 8.91% | 7,048,220 |
+| Afterpay | 12,536 | 1,114 | 8.89% | 7,082,894 |
+| Affirm | 12,418 | 1,073 | 8.64% | 6,923,641 |
+| Klarna | 12,545 | 1,078 | 8.59% | 7,106,344 |
+
+Estas métricas permiten analizar la distribución de las operaciones y los
+incumplimientos según proveedor.
+
+---
+
+# 🛍️ Análisis por categoría
+
+Resultado obtenido:
+
+| Categoría | Operaciones | Incumplimientos | Tasa | Compra promedio | Monto total |
+|---|---:|---:|---:|---:|---:|
+| Electronics | 8,303 | 794 | 9.56% | 1,102.67 | 9,155,487 |
+| Travel | 8,401 | 795 | 9.46% | 1,630.55 | 13,698,230 |
+| Fashion | 8,307 | 729 | 8.78% | 159.88 | 1,328,141 |
+| Beauty | 8,381 | 710 | 8.47% | 158.87 | 1,331,483 |
+| Groceries | 8,240 | 697 | 8.46% | 159.31 | 1,312,731 |
+| Home & Furniture | 8,368 | 654 | 7.82% | 159.54 | 1,335,027 |
+
+Estas métricas corresponden a una ejecución concreta del dataset.
 
 ---
 
 # 📝 Logging
 
-El pipeline registra información en:
+El pipeline registra información durante las diferentes etapas del proceso.
+
+El logging permite visualizar:
+
+- Inicio de la ejecución.
+- Cantidad de registros extraídos.
+- Resultados de los controles de calidad.
+- Registros eliminados.
+- Cantidad de registros procesados.
+- Creación de la base de datos.
+- Creación de las vistas SQL.
+- Resultados de las consultas analíticas.
+- Errores durante la ejecución.
+
+El archivo generado es:
 
 ```text
-Consola
 registro_bnpl.log
 ```
-
-El logging permite observar:
-
-* Extracción de datos.
-* Controles de calidad.
-* Registros eliminados.
-* Registros procesados.
-* Creación de la base de datos.
-* Ejecución de las vistas analíticas.
-* Resultados de los análisis.
-* Errores del pipeline.
 
 ---
 
@@ -419,63 +535,75 @@ Dockerfile
 docker-compose.yml
 ```
 
-Para ejecutar el pipeline mediante Docker:
+El `Dockerfile` utiliza Python 3.11 y permite instalar las dependencias
+definidas en `requirements.txt`.
+
+Desde el directorio del proyecto:
 
 ```cmd
-docker compose -f pipelines\02-pipeline-bnpl\docker-compose.yml up --build
+docker compose up --build
 ```
 
 ---
 
 # 🐍 Ejecución local
 
-Requisitos:
+## Requisitos
 
-* Python 3.11 o compatible.
-* Pip.
+- Python 3.11 o compatible.
+- Pip.
 
-Crear entorno virtual:
+### 1. Crear entorno virtual
 
 ```cmd
 python -m venv .venv
 ```
 
-Activarlo:
+### 2. Activar entorno virtual
+
+En Windows:
 
 ```cmd
 .venv\Scripts\activate
 ```
 
-Instalar dependencias:
+### 3. Instalar dependencias
 
 ```cmd
 pip install -r requirements.txt
 ```
 
-Ejecutar:
+### 4. Ejecutar el pipeline
 
 ```cmd
-python pipelines\02-pipeline-bnpl\bnpl_pipeline.py
+python bnpl_pipeline.py
+```
+
+Al finalizar se generará:
+
+```text
+bnpl_analytics.db
+registro_bnpl.log
 ```
 
 ---
 
 # 🧰 Tecnologías
 
-* Python 3.11
-* Pandas
-* SQLite
-* SQL
-* Docker
-* Docker Compose
-* Logging
-* Git
+- Python 3.11
+- Pandas
+- SQLite
+- SQL
+- Docker
+- Docker Compose
+- Logging
+- Git
 
 ---
 
 # 📚 Conceptos demostrados
 
-Este proyecto demuestra experiencia práctica en:
+Este proyecto demuestra conocimientos prácticos en:
 
 ```text
 ETL
@@ -484,78 +612,108 @@ ETL
 ├── Transform
 └── Load
 
-Data Quality
-│
-├── Schema Validation
-├── Data Validation
-├── Duplicate Detection
-└── Null Handling
-
 Data Engineering
 │
+├── Data Quality
+├── Data Validation
 ├── Feature Engineering
-├── Data Cleaning
-├── SQLite
 └── Logging
 
 Data Analytics
 │
-├── SQL Views
+├── SQL
 ├── Aggregations
-├── Grouping
-└── Risk / Default Metrics
+├── Analytical Views
+├── Segmentation
+└── Business Metrics
+
+Data Storage
+│
+└── SQLite
 ```
 
 ---
 
 # ⚠️ Limitaciones
 
-Este proyecto tiene fines educativos y de portafolio.
+Este proyecto está diseñado como una implementación educativa y de portafolio.
 
 Actualmente:
 
-* Utiliza un archivo CSV como fuente.
-* Utiliza SQLite como almacenamiento.
-* El procesamiento es batch.
-* No existe procesamiento incremental.
-* No existe un modelo de Machine Learning.
-* Las categorías de `nivel_credito` son reglas analíticas definidas para el proyecto.
-* Las métricas representan únicamente el dataset procesado.
+- El origen de datos es un archivo CSV.
+- El almacenamiento utiliza SQLite.
+- El pipeline se ejecuta manualmente.
+- No existe procesamiento incremental.
+- No existe orquestación externa.
+- Las segmentaciones son reglas definidas dentro del pipeline.
+- Las métricas generadas son descriptivas.
+- No se utiliza Machine Learning para realizar predicciones.
+- La clasificación de `Credit_Score` no representa una decisión crediticia real.
 
 ---
 
 # 🚀 Próximas mejoras
 
-Como evolución del proyecto se podrían incorporar:
+Como evolución futura del proyecto podrían incorporarse:
 
-* Tests automatizados.
-* Procesamiento incremental.
-* Orquestación con Airflow o Prefect.
-* PostgreSQL como almacenamiento.
-* Formato Parquet.
-* Validaciones automatizadas más avanzadas.
-* Dashboard de métricas BNPL.
-* Procesamiento histórico.
-* Modelos predictivos como una etapa posterior del proyecto.
+- Tests automatizados.
+- Procesamiento incremental.
+- Orquestación mediante Airflow o Prefect.
+- Almacenamiento en PostgreSQL.
+- Uso de Parquet.
+- Mayor cantidad de métricas analíticas.
+- Dashboards para visualización.
+- Validaciones automatizadas más extensas.
+- Data lineage.
+- Monitoreo y observabilidad del pipeline.
 
 ---
 
 # 🎯 Objetivo dentro del portafolio
 
-Este proyecto corresponde al **segundo nivel del portafolio de Data Engineering**.
+Este proyecto corresponde al **segundo nivel del portfolio de Data Engineering**.
 
-Mientras el Proyecto 01 se concentra principalmente en un pipeline ETL de fraude transaccional, este proyecto amplía el flujo incorporando:
+La finalidad es demostrar una evolución respecto al pipeline anterior,
+incorporando:
 
 ```text
-Mayor volumen de datos
-        ↓
-Más validaciones
-        ↓
+ETL
+ ↓
+Data Quality
+ ↓
 Feature Engineering
-        ↓
-Múltiples dimensiones analíticas
-        ↓
-Métricas SQL
+ ↓
+Segmentación
+ ↓
+SQLite
+ ↓
+SQL Analytics
 ```
 
-El objetivo es demostrar una progresión desde pipelines ETL básicos hacia procesos de datos más estructurados y orientados al análisis.
+El proyecto muestra cómo un pipeline puede transformar datos operacionales
+en información estructurada para análisis.
+
+---
+
+# 💼 Competencias demostradas
+
+Este proyecto demuestra experiencia práctica en:
+
+- Construcción de pipelines ETL con Python.
+- Procesamiento de datos con Pandas.
+- Validación y limpieza de datasets.
+- Implementación de controles de Data Quality.
+- Conversión y validación de tipos de datos.
+- Validación de rangos y reglas de negocio.
+- Feature Engineering.
+- Segmentación de datos.
+- Transformación de variables categóricas.
+- Persistencia de datos utilizando SQLite.
+- Creación de tablas y vistas SQL.
+- Uso de funciones de agregación.
+- Generación de métricas descriptivas.
+- Análisis por edad, proveedor y categoría.
+- Logging de procesos ETL.
+- Manejo de errores.
+- Ejecución mediante Docker.
+- Organización de un proyecto orientado a Data Engineering y Data Analytics.

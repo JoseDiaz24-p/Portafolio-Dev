@@ -33,7 +33,7 @@ def main():
     #3.TRansformar
     #--------------------------------------------------
 
-    print("\n[3/4] Extrayendo Datos...")
+    print("\n[3/4] Transformando Datos...")
     
     df = transformar_clima(datos_crudos)
     

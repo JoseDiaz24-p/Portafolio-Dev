@@ -8,9 +8,8 @@ Actualmente estoy orientando mi perfil hacia **Data Engineering y Data Analytics
 
 Este repositorio reúne proyectos personales y académicos que muestran mi evolución desde el desarrollo de software hacia el trabajo con datos.
 
----
 
-## 🎯 Perfil
+## Perfil
 
 Mi objetivo profesional es desarrollarme como **Data Engineer / Data Analyst Junior**, construyendo una base sólida en:
 
@@ -27,9 +26,7 @@ Mi objetivo profesional es desarrollarme como **Data Engineer / Data Analyst Jun
 
 Mi experiencia previa en desarrollo Full Stack complementa este enfoque, especialmente en Python/Django, React, APIs REST y bases de datos.
 
----
-
-# 📂 Proyectos
+# Proyectos
 
 ## 01. Pipeline ETL — Detección y análisis de fraude
 
@@ -55,7 +52,6 @@ El proyecto implementa:
 
 [Ver proyecto →](./pipelines/01-pipeline-fraude_tarjetas_de_credito/Readme.md)
 
----
 
 ## 02. Pipeline ETL — Análisis de riesgo BNPL
 
@@ -89,7 +85,6 @@ Las métricas generadas son **descriptivas y analíticas**. El proyecto no imple
 
 [Ver proyecto →](./pipelines/02-pipeline-bnpl/README.MD)
 
----
 
 ## 03. Pipeline Fintech + Analytics + Agente experimental
 
@@ -119,9 +114,8 @@ La integración con IA tiene un carácter **experimental y complementario**. No 
 
 [Ver proyecto →](./pipelines/03-pipeline-fintech-data-experience-agent/README.md)
 
----
 
-# 🗄️ Bases de Datos
+# Bases de Datos
 
 ## Oracle SQL — E-Commerce
 
@@ -155,9 +149,8 @@ Como evolución futura se contempla incorporar procedimientos, funciones, trigge
 
 [Ver proyecto →](./databases/01-oracle-plsql-ecommerce/README.md)
 
----
 
-# 🌐 Desarrollo Frontend
+# Desarrollo Frontend
 
 Además de mi orientación actual hacia datos, mantengo proyectos realizados durante mi formación y experiencia en desarrollo web.
 
@@ -185,9 +178,8 @@ Aplicación frontend que consume una API para mostrar información de personajes
 
 [Ver proyecto →](./frontend/rick-and-morty-explorer/)
 
----
 
-# ⚙️ Integración Continua
+# Integración Continua
 
 El repositorio utiliza **GitHub Actions** para validar los pipelines principales.
 
@@ -201,9 +193,8 @@ Actualmente el workflow:
 
 Esto permite comprobar automáticamente que los pipelines principales pueden construirse y ejecutarse en un entorno limpio.
 
----
 
-# 🧰 Tecnologías
+# Tecnologías
 
 ### Data Engineering / Analytics
 
@@ -240,9 +231,8 @@ Esto permite comprobar automáticamente que los pipelines principales pueden con
 - Integración de APIs de Inteligencia Artificial
 - Gemini Function Calling
 
----
 
-# 📚 Conocimientos que estoy fortaleciendo
+# Conocimientos que estoy fortaleciendo
 
 Actualmente estoy profundizando principalmente en:
 

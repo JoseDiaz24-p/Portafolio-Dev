@@ -232,23 +232,8 @@ Esto permite comprobar automáticamente que los pipelines principales pueden con
 - Gemini Function Calling
 
 
-# Conocimientos que estoy fortaleciendo
+## En qué estoy trabajando
 
-Actualmente estoy profundizando principalmente en:
-
-```text
-Python
-   ↓
-Pandas
-   ↓
-ETL + Data Quality
-   ↓
-SQL
-   ↓
-Bases de Datos
-   ↓
-Docker
-   ↓
-Data Analytics
-   ↓
-Orquestación y herramientas de Data Engineering
+Actualmente sigo practicando Python y SQL, principalmente en proyectos de extracción, limpieza y transformación de datos.
+También estoy reforzando el uso de Pandas para el procesamiento de información, las consultas a bases de datos y Docker para ejecutar mis proyectos.
+Mi siguiente objetivo es profundizar en el análisis y la visualización de datos, sin dejar de lado lo que he aprendido sobre procesos ETL.
